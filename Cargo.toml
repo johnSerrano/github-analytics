@@ -1,0 +1,8 @@
+[package]
+name = "github_analytics"
+version = "0.1.0"
+authors = ["John Serrano <johnserrano404@gmail.com>"]
+
+[dependencies]
+hyper = "*"
+rustc-serialize = "*"
