@@ -52,6 +52,21 @@ pub fn get_repo_languages(languages_url: String) -> HashMap<String, i64> {
 }
 
 
+// Takes a vec of Repo structs and returns a HashMap of all the repos and their
+// languages. The hashmap is indexed by the full name of the repository
+// (Repo.full_name).
+pub fn get_languages(repos: Vec<Repo>) -> HashMap<String, HashMap<String, i64>> {
+    let mut repo_lang_map = HashMap::new();
+    for repo in repos {
+        let full_name = repo.full_name.unwrap();
+        let langs = get_repo_languages(repo.languages_url.unwrap());
+        repo_lang_map.insert(full_name, langs);
+    }
+
+    return repo_lang_map;
+}
+
+
 // Get all repos from a user. Returns vector of Repo structs, each containing
 // info on one repo and api links to more info on that repo.
 pub fn get_repos(user: User) -> Vec<Repo> {

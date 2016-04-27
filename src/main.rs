@@ -4,7 +4,7 @@ extern crate rustc_serialize;
 mod json_structs;
 mod parsers;
 
-use parsers::{get_user, get_repos, get_repo_languages};
+use parsers::{get_user, get_repos, get_languages};
 use json_structs::User;
 
 
@@ -20,6 +20,7 @@ fn print_report(user: User) {
     let user_clone = user.clone();
 
     let repos = get_repos(user);
+    let repo_lang_map = get_languages(repos.clone());
 
     // Print user name
     println!("USER: {}\n", user_clone.login.unwrap());
@@ -39,7 +40,7 @@ fn print_report(user: User) {
             let name = repo.name.unwrap();
             println!("{}", name);
 
-            let langs = get_repo_languages(repo.languages_url.unwrap());
+            let langs = repo_lang_map[&repo.full_name.unwrap()].clone();
             println!("{:?}", langs);
 
             println!("\n");
