@@ -11,19 +11,31 @@ use rustc_serialize::json;
 
 fn main() {
     let user = get_user("johnserrano");
+    print_report(user);
+}
 
+
+// Compile all stats and print report
+fn print_report(user: User) {
     println!("USER: {}\n", &user.clone().login.unwrap());
 
     let repos = get_repos(user);
-    assert!(repos.len() > 1);
 
-    println!("***** REPOS *****");
-    for repo in repos {
-        let name = &repo.clone().name.unwrap();
-        println!("{}", name);
+    println!("Total repositories: {}\n", repos.len());
+
+    assert!(repos.len() > 1);
+    if repos.len() > 1 {
+        println!("***** REPOS *****");
+        for repo in repos {
+            let name = &repo.clone().name.unwrap();
+            println!("{}", name);
+        }
     }
 }
 
+
+// Get all repos from a user. Returns vector of Repo structs, each containing
+// info on one repo and api links to more info on that repo.
 fn get_repos(user: User) -> Vec<Repo> {
     let client = Client::new();
     let mut resp = client.get(user.repos_url.unwrap().as_str())
@@ -41,6 +53,9 @@ fn get_repos(user: User) -> Vec<Repo> {
     return repos;
 }
 
+
+// Get user struct from login name. Struct contains some info and many useful
+// api links to more info.
 fn get_user(username: &str) -> User {
     let url = format!("https://api.github.com/users/{}", username);
     let client = Client::new();
