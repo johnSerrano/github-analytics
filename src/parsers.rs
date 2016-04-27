@@ -5,6 +5,9 @@ use std::io::prelude::*;
 use json_structs::{User, Repo};
 use rustc_serialize::json;
 
+use std::thread;
+use std::sync::mpsc::channel;
+
 header! { (Authorization, "Authorization") => [String] }
 
 // Get languages for a repository. return hashmap with those languages.
@@ -13,7 +16,8 @@ pub fn get_repo_languages(languages_url: String) -> HashMap<String, i64> {
     let client = Client::new();
     let mut resp = client.get(languages_url.as_str())
                          .header(UserAgent("rust-hyper".to_string()))
-                         .header(Authorization("token f4f6caa6a3e5f5da491e42d6ee14708f325ad655".to_string()))
+                         .header(Authorization("token f4f6caa6a3e5f5da491e42d6ee14708f325ad655"
+                                                   .to_string()))
                          .send()
                          .unwrap();
     let mut response_content = String::new();
@@ -26,7 +30,7 @@ pub fn get_repo_languages(languages_url: String) -> HashMap<String, i64> {
 
     let mut langs = HashMap::new();
 
-    //remove brackets
+    // remove brackets
     response_content.pop();
     response_content.remove(0);
 
@@ -42,7 +46,7 @@ pub fn get_repo_languages(languages_url: String) -> HashMap<String, i64> {
         let mut key = json_row[0].to_string();
         let value = json_row[1].to_string().parse::<i64>().unwrap();
 
-        //remove quotes
+        // remove quotes
         key.remove(0);
         key.pop();
 
@@ -57,9 +61,23 @@ pub fn get_repo_languages(languages_url: String) -> HashMap<String, i64> {
 // (Repo.full_name).
 pub fn get_languages(repos: Vec<Repo>) -> HashMap<String, HashMap<String, i64>> {
     let mut repo_lang_map = HashMap::new();
-    for repo in repos {
-        let full_name = repo.full_name.unwrap();
-        let langs = get_repo_languages(repo.languages_url.unwrap());
+
+    let (sender, receiver) = channel();
+
+    for repo in repos.clone() {
+        let full_name = repo.full_name.clone().unwrap();
+        let sender = sender.clone();
+
+        // get langs asynchronously
+        thread::spawn(move || {
+            let langs = get_repo_languages(repo.languages_url.unwrap());
+            sender.send((full_name, langs)).unwrap();
+        });
+
+    }
+
+    for _ in 0..repos.len() {
+        let (full_name, langs) = receiver.recv().unwrap();
         repo_lang_map.insert(full_name, langs);
     }
 
@@ -73,7 +91,8 @@ pub fn get_repos(user: User) -> Vec<Repo> {
     let client = Client::new();
     let mut resp = client.get(user.repos_url.unwrap().as_str())
                          .header(UserAgent("rust-hyper".to_string()))
-                         .header(Authorization("token f4f6caa6a3e5f5da491e42d6ee14708f325ad655".to_string()))
+                         .header(Authorization("token f4f6caa6a3e5f5da491e42d6ee14708f325ad655"
+                                                   .to_string()))
                          .send()
                          .unwrap();
     let mut response_content = String::new();
@@ -95,7 +114,8 @@ pub fn get_user(username: &str) -> User {
     let client = Client::new();
     let mut resp = client.get(url.as_str())
                          .header(UserAgent("rust-hyper".to_string()))
-                         .header(Authorization("token f4f6caa6a3e5f5da491e42d6ee14708f325ad655".to_string()))
+                         .header(Authorization("token f4f6caa6a3e5f5da491e42d6ee14708f325ad655"
+                                                   .to_string()))
                          .send()
                          .unwrap();
     let mut response_content = String::new();
