@@ -6,10 +6,14 @@ mod parsers;
 
 use parsers::{get_user, get_repos, get_languages};
 use json_structs::User;
+use std::env;
 
 
 fn main() {
-    let user = get_user("johnserrano");
+    assert!(env::args().len() > 1);
+    let args: Vec<_> = env::args().collect();
+    let username = args[1].to_string();
+    let user = get_user(username.as_str());
     print_report(user);
 }
 

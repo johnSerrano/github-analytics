@@ -76,6 +76,7 @@ pub fn get_languages(repos: Vec<Repo>) -> HashMap<String, HashMap<String, i64>> 
 
     }
 
+    // Receive lang from asynchronous calls
     for _ in 0..repos.len() {
         let (full_name, langs) = receiver.recv().unwrap();
         repo_lang_map.insert(full_name, langs);
