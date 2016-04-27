@@ -17,13 +17,16 @@ fn main() {
 
 // Compile all stats and print report
 fn print_report(user: User) {
-    println!("USER: {}\n", &user.clone().login.unwrap());
+    // Print user name
+    let user_clone = user.clone();
+    println!("USER: {}\n", user_clone.login.unwrap());
 
     let repos = get_repos(user);
 
-    println!("Total repositories: {}\n", repos.len());
+    // Print total number of repositories
+    println!("Total repositories: {}\n", user_clone.public_repos);
 
-    assert!(repos.len() > 1);
+    // Print all repos and info on each
     if repos.len() > 1 {
         println!("***** REPOS *****");
         for repo in repos {
