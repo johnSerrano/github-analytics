@@ -1,10 +1,11 @@
-#[macro_use] extern crate hyper;
+#[macro_use]
+extern crate hyper;
 extern crate rustc_serialize;
 
 mod json_structs;
 mod parsers;
 
-use parsers::{get_user, get_repos, get_languages};
+use parsers::{get_user, get_repos, get_languages, get_langs_for_user};
 use json_structs::User;
 use std::env;
 
@@ -25,6 +26,7 @@ fn print_report(user: User) {
 
     let repos = get_repos(user);
     let repo_lang_map = get_languages(repos.clone());
+    let user_lang_map = get_langs_for_user(repo_lang_map.clone());
 
     // Print user name
     println!("USER: {}\n", user_clone.login.unwrap());
@@ -34,6 +36,10 @@ fn print_report(user: User) {
     println!("Total public gists: {}", user_clone.public_gists);
     println!("Followers: {}", user_clone.followers);
     println!("Following: {}", user_clone.following);
+    println!("\nLanguages:");
+    for (lang, freq) in &user_lang_map {
+        println!("{}: {}", lang, freq);
+    }
 
     println!("\n");
 

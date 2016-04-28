@@ -86,6 +86,28 @@ pub fn get_languages(repos: Vec<Repo>) -> HashMap<String, HashMap<String, i64>> 
 }
 
 
+// Get all languages used by user
+pub fn get_langs_for_user(all_langs: HashMap<String, HashMap<String, i64>>) -> HashMap<String, i64> {
+    let mut result_map: HashMap<String, i64> = HashMap::new();
+
+    let mut result_keys: Vec<String> = Vec::new();
+
+    for (_, map) in all_langs {
+        let repo_keys: Vec<&String> = map.keys().collect::<Vec<&String>>();
+        for key in repo_keys {
+            if result_keys.contains(key) {
+                let new_val = result_map[key] + map[key];
+                result_map.insert(key.as_str().to_string(), new_val);
+            } else {
+                result_map.insert(key.as_str().to_string(), map[key]);
+                result_keys.push(key.clone());
+            }
+        }
+    }
+    return result_map;
+}
+
+
 // Get all repos from a user. Returns vector of Repo structs, each containing
 // info on one repo and api links to more info on that repo.
 pub fn get_repos(user: User) -> Vec<Repo> {
