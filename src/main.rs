@@ -51,7 +51,9 @@ fn print_report(user: User) {
             println!("{}", name);
 
             let langs = repo_lang_map[&repo.full_name.unwrap()].clone();
-            println!("{:?}", langs);
+            for (lang, freq) in &langs {
+                println!("{}: {}", lang, freq);
+            }
 
             println!("\n");
         }
