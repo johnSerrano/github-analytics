@@ -44,7 +44,7 @@ fn print_report(user: User) {
 
     user_lang_vec.sort_by_key(|e| -1 * (*e).1);
 
-
+    // Print all the languages the user has used
     println!("\nLanguages:");
     for (lang, freq) in user_lang_vec {
         println!("{}: {}", lang, freq);
@@ -59,6 +59,15 @@ fn print_report(user: User) {
             let name = repo.name.unwrap();
             println!("{}", name);
 
+            // Print repo description
+            let description = repo.description.unwrap();
+            if description == "" {
+                println!("No description");
+            } else {
+                println!("{}", description);
+            }
+
+            // Print repo languages
             let langs = repo_lang_map[&repo.full_name.unwrap()].clone();
             for (lang, freq) in &langs {
                 println!("{}: {}", lang, freq);

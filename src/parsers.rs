@@ -1,13 +1,14 @@
+// A collection of functions for getting data from github's api
+
 use std::collections::HashMap;
-use hyper::Client;
-use hyper::header::UserAgent;
-use hyper::Url;
 use std::io::prelude::*;
+use std::thread;
+use std::sync::mpsc::channel;
+use hyper::{Client, Url};
+use hyper::header::UserAgent;
 use json_structs::{User, Repo};
 use rustc_serialize::json;
 
-use std::thread;
-use std::sync::mpsc::channel;
 
 header! { (Authorization, "Authorization") => [String] }
 
